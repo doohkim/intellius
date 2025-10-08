@@ -28,14 +28,6 @@ repos:
   # 로컬 커스텀 훅들
   - repo: local
     hooks:
-      # 환경변수 파일 생성 (AWS Secrets Manager에서)
-      - id: create-env-file
-        name: Create Environment File from AWS Secrets Manager
-        entry: bash -c "echo '🔐 AWS Secrets Manager에서 환경변수 파일 생성 중...' && python3 scripts/deploy-env.py"
-        language: system
-        files: 'scripts/deploy-env.py'
-        pass_filenames: false
-        always_run: false
 
       # SSH 설정 확인 및 설정
       - id: ssh-setup
