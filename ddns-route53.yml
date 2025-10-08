@@ -1,0 +1,6 @@
+route53:
+  hostedZoneID: "Z0318412SF3YZR0BJNVM"
+  recordsSet:
+    - name: "chat.jcc-seoul.com"
+      type: "A"
+      ttl: 300

@@ -1,0 +1,87 @@
+repos:
+  # 기본 pre-commit 훅들
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: end-of-file-fixer
+        files: '\.py$'
+      - id: trailing-whitespace
+        files: '\.py$'
+      - id: check-yaml
+        files: '\.ya?ml$'
+      - id: check-json
+        files: '\.json$'
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: debug-statements
+        files: '\.py$'
+
+  # Python 코드 포맷팅 및 린팅
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    hooks:
+      - id: black
+        language_version: python3
+        files: '\.py$'
+
+  # 로컬 커스텀 훅들
+  - repo: local
+    hooks:
+      # 환경변수 파일 생성 (AWS Secrets Manager에서)
+      - id: create-env-file
+        name: Create Environment File from AWS Secrets Manager
+        entry: bash -c "echo '🔐 AWS Secrets Manager에서 환경변수 파일 생성 중...' && python3 scripts/deploy-env.py"
+        language: system
+        files: 'scripts/deploy-env.py'
+        pass_filenames: false
+        always_run: false
+
+      # SSH 설정 확인 및 설정
+      - id: ssh-setup
+        name: SSH Setup Check
+        entry: bash -c "if [ ! -f ~/.ssh/id_rsa ]; then echo 'SSH 키가 없습니다. SSH 키를 생성합니다...' && ssh-keygen -t rsa -b 4096 -C 'johnkdo2020@gmail.com' -f ~/.ssh/id_rsa -N '' && echo 'SSH 키가 생성되었습니다. 공개키를 복사하세요:' && cat ~/.ssh/id_rsa.pub; else echo 'SSH 키가 이미 존재합니다.'; fi"
+        language: system
+        pass_filenames: false
+        always_run: true
+
+
+      # Docker 관련 파일 체크
+      - id: docker-check
+        name: Docker Configuration Check
+        entry: bash -c "echo 'Docker 설정을 확인합니다...' && if [ -f docker-compose.yml ]; then echo 'docker-compose.yml 파일이 존재합니다.' && docker-compose config --quiet; fi"
+        language: system
+        files: 'docker-compose.yml|Dockerfile'
+        pass_filenames: false
+
+      # Poetry 의존성 체크
+      - id: poetry-check
+        name: Poetry Dependencies Check
+        entry: bash -c "echo 'Poetry 의존성을 확인합니다...' && poetry check"
+        language: system
+        files: 'pyproject.toml|poetry.lock'
+        pass_filenames: false
+
+      # AWS 자격증명 체크
+      - id: aws-credentials-check
+        name: AWS Credentials Check
+        entry: bash -c "echo 'AWS 자격증명을 확인합니다...' && if ! aws sts get-caller-identity >/dev/null 2>&1; then echo 'AWS 자격증명이 설정되지 않았습니다.' && echo 'AWS CLI를 설정하거나 환경변수를 확인하세요.' && exit 1; else echo 'AWS 자격증명이 올바르게 설정되어 있습니다.'; fi"
+        language: system
+        files: 'server/app/src/core/secrets.py'
+        pass_filenames: false
+
+      # 환경변수 파일 체크
+      - id: env-check
+        name: Environment Files Check
+        entry: bash -c "echo '환경변수 파일을 확인합니다...' && if [ -f nginx-certbot.env ]; then echo 'nginx-certbot.env 파일이 존재합니다.'; fi && if [ -f .env ]; then echo '.env 파일이 존재합니다.'; fi"
+        language: system
+        files: '\.env|nginx-certbot.env'
+        pass_filenames: false
+
+      # 스크립트 실행 권한 체크
+      - id: script-permissions
+        name: Script Permissions Check
+        entry: bash -c "echo '스크립트 파일 권한을 확인합니다...' && find scripts/ -name '*.sh' -exec chmod +x {} \; && find scripts/ -name '*.py' -exec chmod +x {} \; && echo '스크립트 실행 권한이 설정되었습니다.'"
+        language: system
+        files: 'scripts/.*\.(sh|py)$'
+        pass_filenames: false

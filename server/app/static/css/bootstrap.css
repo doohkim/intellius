@@ -1,0 +1,7 @@
+/* Bootstrap-like styles */
+.container { max-width: 1200px; margin: 0 auto; }
+.row { display: flex; flex-wrap: wrap; }
+.col { flex: 1; }
+.btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+.btn-primary { background: #007bff; color: white; }
+.btn-secondary { background: #6c757d; color: white; }
