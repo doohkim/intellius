@@ -33,6 +33,6 @@ repos:
         name: Server Environment Update
         entry: scripts/hooks/server-env-update.sh
         language: system
-        stages: [push]
+        stages: [pre-push]
         pass_filenames: false
         always_run: true

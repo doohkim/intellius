@@ -22,15 +22,8 @@ mkdir -p scripts/hooks
 
 echo -e "${GREEN}📁 Git 훅 디렉토리 확인 중...${NC}"
 
-# pre-push 훅 설정
-if [ -f "scripts/hooks/pre-push" ]; then
-    cp scripts/hooks/pre-push .git/hooks/pre-push
-    chmod +x .git/hooks/pre-push
-    echo -e "${GREEN}✅ pre-push 훅 설정 완료${NC}"
-else
-    echo -e "${RED}❌ scripts/hooks/pre-push 파일을 찾을 수 없습니다.${NC}"
-    exit 1
-fi
+# pre-push 훅은 pre-commit 프레임워크가 관리하므로 별도 설정 불필요
+echo -e "${GREEN}✅ pre-push 훅은 pre-commit 프레임워크가 관리합니다${NC}"
 
 # pre-commit 훅 설정 (pre-commit 프레임워크 사용)
 echo -e "${BLUE}📦 pre-commit 프레임워크 설치 중...${NC}"
