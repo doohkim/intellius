@@ -1,15 +1,15 @@
- # Gunicorn 설정 파일 
+# Gunicorn 설정 파일
 # 이 파일은 FastAPI 애플리케이션을 위한 Gunicorn 서버 설정을 정의합니다.
 # 동기/비동기 Worker를 환경변수로 선택할 수 있습니다.
 
 import multiprocessing
 import os
- 
+
 # 기본 서버 설정
 bind = "0.0.0.0:8000"  # 서버가 바인딩될 주소와 포트
 
- 
-# Worker 설정 - 환경변수로 동기/비동기 선택 가능 
+
+# Worker 설정 - 환경변수로 동기/비동기 선택 가능
 worker_type = os.environ.get("WORKER_TYPE", "async")  # "async" 또는 "sync"
 
 if worker_type == "async":

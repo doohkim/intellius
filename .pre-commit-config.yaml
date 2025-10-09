@@ -24,3 +24,15 @@ repos:
       - id: black
         language_version: python3
         files: '\.py$'
+
+  # 로컬 커스텀 훅들
+  - repo: local
+    hooks:
+      # Pre-push: 서버 .env 파일 업데이트
+      - id: server-env-update
+        name: Server Environment Update
+        entry: scripts/hooks/server-env-update.sh
+        language: system
+        stages: [push]
+        pass_filenames: false
+        always_run: true
