@@ -38,16 +38,8 @@ class SecretsManager:
     def get_secret(self, secret_name: str) -> Dict[str, Any]:
         """
         AWS Secrets Manager에서 시크릿 값을 가져옵니다.
-
-        Args:
-            secret_name: 시크릿 이름
-
-        Returns:
-            Dict[str, Any]: 시크릿 값 (JSON 파싱된 딕셔너리)
-
-        Raises:
-            ClientError: AWS API 오류
-            ValueError: JSON 파싱 오류
+        Args: secret_name: 시크릿 이름
+        Returns:Dict[str, Any]: 시크릿 값 (JSON 파싱된 딕셔너리)
         """
         try:
             logger.info(f"시크릿 '{secret_name}' 가져오는 중...")
@@ -88,16 +80,10 @@ class SecretsManager:
     def get_secret_value(self, secret_name: str, key: str) -> str:
         """
         시크릿에서 특정 키의 값을 가져옵니다.
-
         Args:
             secret_name: 시크릿 이름
             key: 가져올 키 이름
-
-        Returns:
-            str: 키에 해당하는 값
-
-        Raises:
-            KeyError: 키가 존재하지 않을 때
+        Returns: str: 키에 해당하는 값
         """
         secret_dict = self.get_secret(secret_name)
 
@@ -110,12 +96,11 @@ class SecretsManager:
     def list_secrets(self) -> list:
         """
         사용 가능한 시크릿 목록을 가져옵니다.
-
-        Returns:
-            list: 시크릿 이름 목록
+        Returns: list: 시크릿 이름 목록
         """
         try:
             response = self.client.list_secrets()
+            logger.info(f"시크릿 목록 가져오기 성공: {response}")
             secret_names = [secret["Name"] for secret in response.get("SecretList", [])]
             logger.info(f"총 {len(secret_names)}개의 시크릿을 찾았습니다.")
             return secret_names
@@ -126,37 +111,3 @@ class SecretsManager:
 
 # 전역 인스턴스
 secrets_manager = SecretsManager()
-
-
-# 편의 함수들
-def get_secret(secret_name: str) -> Dict[str, Any]:
-    """시크릿 전체를 가져오는 편의 함수"""
-    return secrets_manager.get_secret(secret_name)
-
-
-def get_secret_value(secret_name: str, key: str) -> str:
-    """시크릿에서 특정 값을 가져오는 편의 함수"""
-    return secrets_manager.get_secret_value(secret_name, key)
-
-
-def load_secrets_to_env(secret_name: str, prefix: str = "") -> None:
-    """
-    시크릿의 모든 키-값을 환경변수로 로드합니다.
-
-    Args:
-        secret_name: 시크릿 이름
-        prefix: 환경변수 이름에 추가할 접두사
-    """
-    import os
-
-    try:
-        secret_dict = get_secret(secret_name)
-
-        for key, value in secret_dict.items():
-            env_key = f"{prefix}{key}" if prefix else key
-            os.environ[env_key] = str(value)
-            logger.info(f"환경변수 '{env_key}' 설정됨")
-
-    except Exception as e:
-        logger.error(f"시크릿을 환경변수로 로드하는 중 오류 발생: {e}")
-        raise

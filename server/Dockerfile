@@ -28,5 +28,5 @@ COPY . .
 # 포트 노출
 EXPOSE 8000
 
-# 애플리케이션 실행
-CMD ["gunicorn", "-c", "gunicorn.py", "src.main:app"]
+# 환경변수 파일 생성 후 애플리케이션 실행
+CMD ["bash", "-c", "python3 scripts/deploy-env.py && gunicorn -c gunicorn.py src.main:app"]
