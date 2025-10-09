@@ -8,6 +8,14 @@ echo "📡 서버에 연결하여 .env 파일을 생성/업데이트합니다...
 SERVER_HOST=${SERVER_HOST:-"211.44.169.71"}
 SERVER_USER=${SERVER_USER:-"root"}
 
+# deploy-env.py 실행 (환경변수가 설정된 경우에만)
+if [ -n "$SECRET_NAME" ] && [ -n "$AWS_ACCESS_KEY_ID" ] && [ -n "$AWS_SECRET_ACCESS_KEY" ]; then
+    echo "🐍 deploy-env.py 실행 중..."
+    python scripts/deploy-env.py
+else
+    echo "⚠️  환경변수가 설정되지 않아 deploy-env.py를 건너뜁니다."
+fi
+
 # SSH로 서버에 연결하여 .env 파일 생성/업데이트
 ssh -o StrictHostKeyChecking=no -p 23231 $SERVER_USER@$SERVER_HOST << 'EOF'
     echo "🔐 서버에서 .env 파일 생성 중..."
